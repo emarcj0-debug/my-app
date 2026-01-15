@@ -148,8 +148,25 @@
   * {
     @apply border-border outline-ring/50;
   }
+  
+  /* Smooth scrolling for the entire page */
+  html {
+    scroll-behavior: smooth;
+  }
+  
   body {
     @apply bg-background text-foreground;
+  }
+  
+  /* Hide scrollbar but keep functionality */
+  html, body {
+    scrollbar-width: none; /* Firefox */
+    -ms-overflow-style: none; /* IE and Edge */
+  }
+  
+  html::-webkit-scrollbar,
+  body::-webkit-scrollbar {
+    display: none; /* Chrome, Safari, Opera */
   }
 }
 
