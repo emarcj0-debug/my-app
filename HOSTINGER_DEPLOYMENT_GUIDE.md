@@ -12,7 +12,91 @@ Complete step-by-step guide to deploy your InternTrack Next.js app on Hostinger 
 
 ---
 
-## 📦 Part 1: Prepare Your Project for Upload
+## � METHOD 1: Deploy via CyberPanel Git Manager (Recommended)
+
+This method lets you pull updates directly from GitHub to your server.
+
+### Step 1: Login to CyberPanel
+1. Open browser: `https://your-vps-ip:8090`
+2. Login with your CyberPanel credentials
+
+### Step 2: Create Website (if not exists)
+1. Go to **Websites** → **Create Website**
+2. Fill in:
+   - **Domain Name**: `interntrack.online` (your domain)
+   - **Email**: `admin@interntrack.online`
+   - **Package**: Select your hosting package
+   - **PHP**: Select any version
+3. Click **Create Website**
+
+### Step 3: Set Up Git in CyberPanel
+1. Go to **Websites** → **List Websites**
+2. Find your domain → Click **Manage**
+3. Scroll down and click **Git** (under Manage Website section)
+
+### Step 4: Clone Your Repository
+1. In the Git Manager, fill in:
+   - **Repository URL**: `https://github.com/emarcj0-debug/my-app.git`
+   - **Branch**: `master`
+   - **Deploy Path**: `/home/interntrack.online/public_html`
+   - **Auto Pull**: Enable (optional - for automatic updates)
+2. Click **Clone** or **Setup**
+
+### Step 5: Build the Project on Server
+Since this is a Next.js project that needs building, you'll need SSH access:
+
+1. SSH into your server:
+```bash
+ssh root@your-vps-ip
+```
+
+2. Navigate to your project:
+```bash
+cd /home/interntrack.online/public_html
+```
+
+3. Install Node.js (if not installed):
+```bash
+# Install Node.js via NodeSource
+curl -fsSL https://rpm.nodesource.com/setup_20.x | bash -
+dnf install -y nodejs
+```
+
+4. Install dependencies and build:
+```bash
+npm install
+npm run build
+```
+
+5. Copy the built files to public_html:
+```bash
+# Backup existing files
+mv /home/interntrack.online/public_html /home/interntrack.online/public_html_source
+
+# Create new public_html from build output
+cp -r /home/interntrack.online/public_html_source/out /home/interntrack.online/public_html
+
+# Copy .htaccess
+cp /home/interntrack.online/public_html_source/.htaccess /home/interntrack.online/public_html/
+```
+
+6. Set proper permissions:
+```bash
+chown -R interntrack.online:interntrack.online /home/interntrack.online/public_html
+chmod -R 755 /home/interntrack.online/public_html
+```
+
+### Step 6: Set Up Auto-Deploy (Optional)
+For automatic deployments when you push to GitHub:
+
+1. In CyberPanel Git Manager, enable **Auto Pull**
+2. Or set up a webhook in GitHub:
+   - Go to your repo → Settings → Webhooks
+   - Add webhook URL: `https://your-domain.com/git-webhook` (if supported)
+
+---
+
+## 📦 METHOD 2: Manual Upload (Simpler - Recommended for Static Sites)
 
 ### Step 1: Build the Production Site
 
@@ -26,6 +110,7 @@ This creates the `out/` folder with your static site.
 ### Step 2: Create Deployment Zip
 
 ```powershell
+Copy-Item .\.htaccess .\out\.htaccess -Force
 Compress-Archive -Path .\out\* -DestinationPath .\interntrack-deploy.zip -Force
 ```
 
